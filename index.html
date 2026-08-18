@@ -32,6 +32,54 @@
       flex-direction: column;
     }
 
+    /* PANTALLA DE LOGIN */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+      text-align: center;
+    }
+
+    .login-card h2 {
+      margin-top: 0;
+      color: var(--spicy-accent);
+      font-size: 1.4rem;
+    }
+
+    .error-message {
+      color: var(--spicy-accent);
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+      font-weight: bold;
+    }
+
+    /* CONTENIDO PRINCIPAL (OCULTO POR DEFECTO) */
+    .app-content {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+    }
+
     /* HEADER Y CONTADOR */
     header {
       text-align: center;
@@ -360,6 +408,7 @@
     }
 
     input[type="text"],
+    input[type="password"],
     textarea,
     select,
     input[type="file"] {
@@ -400,106 +449,145 @@
 </head>
 <body>
 
-  <header>
-    <h1>Nuestra Historia 💖</h1>
-    <span class="secret-trigger" id="secretTrigger" title="Zona secreta">🔒</span>
-    <div class="counter" id="counter">Calculando tiempo...</div>
-  </header>
-
-  <nav>
-    <button class="nav-btn active" onclick="switchTab('home')">Inicio</button>
-    <button class="nav-btn" onclick="switchTab('his')">Él</button>
-    <button class="nav-btn" onclick="switchTab('hers')">Ella</button>
-    <button class="nav-btn" onclick="switchTab('upload')">➕ Añadir</button>
-    <button class="nav-btn secret-tab" id="secretTabBtn" onclick="switchTab('secret')">🔥 Spicy</button>
-  </nav>
-
-  <main>
-    <!-- SUBPÁGINA: INICIO (HOME) -->
-    <section id="tab-home" class="tab-content active">
-      <div class="welcome-card">
-        <h2 class="welcome-title">Bienvenida, mi cierva 🦌💖</h2>
-        <div class="welcome-subtitle">Un rincón hecho a medida para nosotros dos.</div>
-        
-        <div class="welcome-body">
-          "He creado este lugar para que tengamos nuestro propio espacio digital. Aquí guardaremos los recuerdos más especiales, las fotos que más nos definen, las palabras que nos dedicamos y las notas que no quiero que el tiempo borre. 
-          <br><br>
-          Eres mi amor, y este es nuestro álbum privado donde cada imagen y cada poema cuenta la historia de lo que estamos construyendo juntos.
-          <br><br>
-          Además hay un apartado que esta escondido que si lo encuentras, no se si lo utilizarás o no, quién sabe, TE AMO."
+  <!-- PANTALLA DE AUTENTICACIÓN -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <h2>Acceso Privado 🔒</h2>
+      <form id="loginForm">
+        <div class="form-group" style="text-align: left;">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" required autocomplete="off" />
         </div>
-
-        <button class="reopen-guide-btn" onclick="toggleModal(true)">📖 Ver guía del sitio</button>
-      </div>
-    </section>
-
-    <!-- VENTANA MODAL DE GUÍA INTERACTIVA -->
-    <div class="modal-overlay" id="guideModal">
-      <div class="modal-card">
-        <button class="modal-close-icon" onclick="toggleModal(false)">✖</button>
-        <div class="guide-box-modal">
-          <h3>¿Cómo funciona nuestro sitio? ✨</h3>
-          <ul>
-            <li><b>Sección Él / Ella:</b> Encontrarás lo que publica cada uno por separado.</li>
-            <li><b>Navegación:</b> En cada pestaña podrás deslizar lateralmente para ver las tarjetas una por una.</li>
-            <li><b>Añadir ➕:</b> Aquí tú también puedes subir tus fotos o tus propios poemas/notas.</li>
-            <li><b>Un pequeño secreto:</b> Hay un rincón privado guardado en esta página... ¿serás capaz de encontrarlo? 🤫</li>
-          </ul>
+        <div class="form-group" style="text-align: left;">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" required />
         </div>
-        <button class="close-modal-btn" onclick="toggleModal(false)">Entendido, mi amor 💕</button>
-      </div>
+        <button type="submit" class="submit-btn">Entrar</button>
+        <div class="error-message" id="errorMessage">Acceso denegado</div>
+      </form>
     </div>
+  </div>
 
-    <!-- SUBPÁGINA: ÉL -->
-    <section id="tab-his" class="tab-content">
-      <div id="slider-his" class="slider-container"></div>
-      <div class="slide-indicator">Desliza horizontalmente ➔</div>
-    </section>
+  <!-- CONTENIDO DE LA WEB -->
+  <div class="app-content" id="appContent">
+    <header>
+      <h1>Nuestra Historia 💖</h1>
+      <span class="secret-trigger" id="secretTrigger" title="Zona secreta">🔒</span>
+      <div class="counter" id="counter">Calculando tiempo...</div>
+    </header>
 
-    <!-- SUBPÁGINA: ELLA -->
-    <section id="tab-hers" class="tab-content">
-      <div id="slider-hers" class="slider-container"></div>
-      <div class="slide-indicator">Desliza horizontalmente ➔</div>
-    </section>
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('home')">Inicio</button>
+      <button class="nav-btn" onclick="switchTab('his')">Él</button>
+      <button class="nav-btn" onclick="switchTab('hers')">Ella</button>
+      <button class="nav-btn" onclick="switchTab('upload')">➕ Añadir</button>
+      <button class="nav-btn secret-tab" id="secretTabBtn" onclick="switchTab('secret')">🔥 Spicy</button>
+    </nav>
 
-    <!-- SUBPÁGINA: SECRETA / SPICY -->
-    <section id="tab-secret" class="tab-content">
-      <div id="slider-secret" class="slider-container"></div>
-      <div class="slide-indicator">Desliza horizontalmente ➔</div>
-    </section>
+    <main>
+      <!-- SUBPÁGINA: INICIO (HOME) -->
+      <section id="tab-home" class="tab-content active">
+        <div class="welcome-card">
+          <h2 class="welcome-title">Bienvenida, mi cierva 🦌💖</h2>
+          <div class="welcome-subtitle">Un rincón hecho a medida para nosotros dos.</div>
+          
+          <div class="welcome-body">
+            "He creado este lugar para que tengamos nuestro propio espacio digital. Aquí guardaremos los recuerdos más especiales, las fotos que más nos definen, las palabras que nos dedicamos y las notas que no quiero que el tiempo borre. 
+            <br><br>
+            Eres mi amor, y este es nuestro álbum privado donde cada imagen y cada poema cuenta la historia de lo que estamos construyendo juntos.
+            <br><br>
+            Además hay un apartado que esta escondido que si lo encuentras, no se si lo utilizarás o no, quién sabe, TE AMO."
+          </div>
 
-    <!-- SUBPÁGINA: SUBIR CONTENIDO -->
-    <section id="tab-upload" class="tab-content">
-      <div class="form-card">
-        <h2 style="margin-top:0; color:var(--accent); font-size:1.3rem;">Nuevo Momento 💖</h2>
-        <form id="uploadForm">
-          <div class="form-group">
-            <label for="category">¿Dónde va esta publicación?</label>
-            <select id="category" required>
-              <option value="his">Lo que subió Él</option>
-              <option value="hers">Lo que subió Ella</option>
-              <option value="secret">Apartado Secreto</option>
-            </select>
+          <button class="reopen-guide-btn" onclick="toggleModal(true)">📖 Ver guía del sitio</button>
+        </div>
+      </section>
+
+      <!-- VENTANA MODAL DE GUÍA INTERACTIVA -->
+      <div class="modal-overlay hidden" id="guideModal">
+        <div class="modal-card">
+          <button class="modal-close-icon" onclick="toggleModal(false)">✖</button>
+          <div class="guide-box-modal">
+            <h3>¿Cómo funciona nuestro sitio? ✨</h3>
+            <ul>
+              <li><b>Sección Él / Ella:</b> Encontrarás lo que publica cada uno por separado.</li>
+              <li><b>Navegación:</b> En cada pestaña podrás deslizar lateralmente para ver las tarjetas una por una.</li>
+              <li><b>Añadir ➕:</b> Aquí tú también puedes subir tus fotos o tus propios poemas/notas.</li>
+              <li><b>Un pequeño secreto:</b> Hay un rincón privado guardado en esta página... ¿serás capaz de encontrarlo? 🤫</li>
+            </ul>
           </div>
-          <div class="form-group">
-            <label for="title">Título del momento / poema</label>
-            <input type="text" id="title" placeholder="Ej. Un recuerdo especial" required />
-          </div>
-          <div class="form-group">
-            <label for="image">Foto (Opcional)</label>
-            <input type="file" id="image" accept="image/*" />
-          </div>
-          <div class="form-group">
-            <label for="poem">Poema o Nota Especial</label>
-            <textarea id="poem" rows="5" placeholder="Escribe tu poema o nota aquí..."></textarea>
-          </div>
-          <button type="submit" class="submit-btn">Guardar Momento</button>
-        </form>
+          <button class="close-modal-btn" onclick="toggleModal(false)">Entendido, mi amor 💕</button>
+        </div>
       </div>
-    </section>
-  </main>
+
+      <!-- SUBPÁGINA: ÉL -->
+      <section id="tab-his" class="tab-content">
+        <div id="slider-his" class="slider-container"></div>
+        <div class="slide-indicator">Desliza horizontalmente ➔</div>
+      </section>
+
+      <!-- SUBPÁGINA: ELLA -->
+      <section id="tab-hers" class="tab-content">
+        <div id="slider-hers" class="slider-container"></div>
+        <div class="slide-indicator">Desliza horizontalmente ➔</div>
+      </section>
+
+      <!-- SUBPÁGINA: SECRETA / SPICY -->
+      <section id="tab-secret" class="tab-content">
+        <div id="slider-secret" class="slider-container"></div>
+        <div class="slide-indicator">Desliza horizontalmente ➔</div>
+      </section>
+
+      <!-- SUBPÁGINA: SUBIR CONTENIDO -->
+      <section id="tab-upload" class="tab-content">
+        <div class="form-card">
+          <h2 style="margin-top:0; color:var(--accent); font-size:1.3rem;">Nuevo Momento 💖</h2>
+          <form id="uploadForm">
+            <div class="form-group">
+              <label for="category">¿Dónde va esta publicación?</label>
+              <select id="category" required>
+                <option value="his">Lo que subió Él</option>
+                <option value="hers">Lo que subió Ella</option>
+                <option value="secret">Apartado Secreto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="title">Título del momento / poema</label>
+              <input type="text" id="title" placeholder="Ej. Un recuerdo especial" required />
+            </div>
+            <div class="form-group">
+              <label for="image">Foto (Opcional)</label>
+              <input type="file" id="image" accept="image/*" />
+            </div>
+            <div class="form-group">
+              <label for="poem">Poema o Nota Especial</label>
+              <textarea id="poem" rows="5" placeholder="Escribe tu poema o nota aquí..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Guardar Momento</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script>
+    // --- CONTROL DE INICIO DE SESIÓN ---
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const userInput = document.getElementById('username').value.trim();
+      const passInput = document.getElementById('password').value.trim();
+      const errorMsg = document.getElementById('errorMessage');
+
+      if (userInput === 'micierva12/04' && passInput === 'MiCierva05/04!') {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('appContent').style.display = 'flex';
+        renderGallery();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    });
+
     // --- 1. MODAL INTERACTIVO DE GUÍA ---
     function toggleModal(show) {
       const modal = document.getElementById('guideModal');
@@ -638,8 +726,6 @@
         saveAndRefresh(null);
       }
     });
-
-    renderGallery();
   </script>
 </body>
 </html>
