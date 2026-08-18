@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Nuestro Rincón 💖</title>
+  <style>
+    :root {
+      --bg-color: #0f0204;
+      --card-bg: #1c0508;
+      --primary: #800e13;
+      --accent: #ad2831;
+      --spicy-accent: #ff2a4b;
+      --text: #f0e6e6;
+      --text-muted: #a3888b;
+      --border: #380a0e;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER Y CONTADOR */
+    header {
+      text-align: center;
+      padding: 20px 15px;
+      background: linear-gradient(180deg, #240206 0%, var(--bg-color) 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--text);
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    /* Botón Oculto Secret/Spicy */
+    .secret-trigger {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.4;
+      user-select: none;
+    }
+
+    .counter {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .counter span {
+      color: var(--spicy-accent);
+      font-weight: bold;
+    }
+
+    /* NAVEGACIÓN */
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #140305;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 12px 4px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(173, 40, 49, 0.1);
+    }
+
+    .nav-btn.secret-tab {
+      display: none;
+      color: var(--spicy-accent);
+    }
+
+    .nav-btn.secret-tab.active {
+      border-bottom-color: var(--spicy-accent);
+      background: rgba(255, 42, 75, 0.15);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    main {
+      flex: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ESTILOS DE LA PÁGINA DE INICIO (WELCOME) */
+    .welcome-card {
+      background: linear-gradient(145deg, #1f060a 0%, #120204 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .welcome-title {
+      font-size: 1.6rem;
+      color: var(--spicy-accent);
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    .welcome-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .welcome-body {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #ebdada;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 18px;
+      border-radius: 12px;
+      border-left: 3px solid var(--accent);
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .reopen-guide-btn {
+      background: rgba(128, 14, 19, 0.3);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .reopen-guide-btn:hover {
+      background: var(--accent);
+    }
+
+    /* VENTANA MODAL INTERACTIVA (GUÍA) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+      opacity: 0;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(255, 42, 75, 0.2);
+      position: relative;
+      animation: popup 0.3s ease-out;
+    }
+
+    @keyframes popup {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-close-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .guide-box-modal {
+      text-align: left;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .guide-box-modal h3 {
+      margin: 0 0 12px 0;
+      color: var(--spicy-accent);
+      font-size: 1.1rem;
+    }
+
+    .guide-box-modal ul {
+      margin: 0 0 20px 0;
+      padding-left: 18px;
+    }
+
+    .guide-box-modal li {
+      margin-bottom: 8px;
+    }
+
+    .close-modal-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* VISTA DE SLIDER HORIZONTAL */
+    .slider-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 15px;
+      padding-bottom: 15px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .slider-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      flex: 0 0 100%;
+      scroll-snap-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      max-height: 75vh;
+    }
+
+    .card-img {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-body {
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      margin: 0 0 10px 0;
+      color: var(--text);
+    }
+
+    .card-poem {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #e0d0d2;
+      white-space: pre-line;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* FORMULARIO DE SUBIDA */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    textarea,
+    select,
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      background: #0a0102;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    button.submit-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .slide-indicator {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Nuestra Historia 💖</h1>
+    <span class="secret-trigger" id="secretTrigger" title="Zona secreta">🔒</span>
+    <div class="counter" id="counter">Calculando tiempo...</div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('home')">Inicio</button>
+    <button class="nav-btn" onclick="switchTab('his')">Él</button>
+    <button class="nav-btn" onclick="switchTab('hers')">Ella</button>
+    <button class="nav-btn" onclick="switchTab('upload')">➕ Añadir</button>
+    <button class="nav-btn secret-tab" id="secretTabBtn" onclick="switchTab('secret')">🔥 Spicy</button>
+  </nav>
+
+  <main>
+    <!-- SUBPÁGINA: INICIO (HOME) -->
+    <section id="tab-home" class="tab-content active">
+      <div class="welcome-card">
+        <h2 class="welcome-title">Bienvenida, mi cierva 🦌💖</h2>
+        <div class="welcome-subtitle">Un rincón hecho a medida para nosotros dos.</div>
+        
+        <div class="welcome-body">
+          "He creado este lugar para que tengamos nuestro propio espacio digital. Aquí guardaremos los recuerdos más especiales, las fotos que más nos definen, las palabras que nos dedicamos y las notas que no quiero que el tiempo borre. 
+          <br><br>
+          Eres mi amor, y este es nuestro álbum privado donde cada imagen y cada poema cuenta la historia de lo que estamos construyendo juntos.
+          <br><br>
+          Además hay un apartado que esta escondido que si lo encuentras, no se si lo utilizarás o no, quién sabe, TE AMO."
+        </div>
+
+        <button class="reopen-guide-btn" onclick="toggleModal(true)">📖 Ver guía del sitio</button>
+      </div>
+    </section>
+
+    <!-- VENTANA MODAL DE GUÍA INTERACTIVA -->
+    <div class="modal-overlay" id="guideModal">
+      <div class="modal-card">
+        <button class="modal-close-icon" onclick="toggleModal(false)">✖</button>
+        <div class="guide-box-modal">
+          <h3>¿Cómo funciona nuestro sitio? ✨</h3>
+          <ul>
+            <li><b>Sección Él / Ella:</b> Encontrarás lo que publica cada uno por separado.</li>
+            <li><b>Navegación:</b> En cada pestaña podrás deslizar lateralmente para ver las tarjetas una por una.</li>
+            <li><b>Añadir ➕:</b> Aquí tú también puedes subir tus fotos o tus propios poemas/notas.</li>
+            <li><b>Un pequeño secreto:</b> Hay un rincón privado guardado en esta página... ¿serás capaz de encontrarlo? 🤫</li>
+          </ul>
+        </div>
+        <button class="close-modal-btn" onclick="toggleModal(false)">Entendido, mi amor 💕</button>
+      </div>
+    </div>
+
+    <!-- SUBPÁGINA: ÉL -->
+    <section id="tab-his" class="tab-content">
+      <div id="slider-his" class="slider-container"></div>
+      <div class="slide-indicator">Desliza horizontalmente ➔</div>
+    </section>
+
+    <!-- SUBPÁGINA: ELLA -->
+    <section id="tab-hers" class="tab-content">
+      <div id="slider-hers" class="slider-container"></div>
+      <div class="slide-indicator">Desliza horizontalmente ➔</div>
+    </section>
+
+    <!-- SUBPÁGINA: SECRETA / SPICY -->
+    <section id="tab-secret" class="tab-content">
+      <div id="slider-secret" class="slider-container"></div>
+      <div class="slide-indicator">Desliza horizontalmente ➔</div>
+    </section>
+
+    <!-- SUBPÁGINA: SUBIR CONTENIDO -->
+    <section id="tab-upload" class="tab-content">
+      <div class="form-card">
+        <h2 style="margin-top:0; color:var(--accent); font-size:1.3rem;">Nuevo Momento 💖</h2>
+        <form id="uploadForm">
+          <div class="form-group">
+            <label for="category">¿Dónde va esta publicación?</label>
+            <select id="category" required>
+              <option value="his">Lo que subió Él</option>
+              <option value="hers">Lo que subió Ella</option>
+              <option value="secret">Apartado Secreto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="title">Título del momento / poema</label>
+            <input type="text" id="title" placeholder="Ej. Un recuerdo especial" required />
+          </div>
+          <div class="form-group">
+            <label for="image">Foto (Opcional)</label>
+            <input type="file" id="image" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label for="poem">Poema o Nota Especial</label>
+            <textarea id="poem" rows="5" placeholder="Escribe tu poema o nota aquí..."></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Guardar Momento</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- 1. MODAL INTERACTIVO DE GUÍA ---
+    function toggleModal(show) {
+      const modal = document.getElementById('guideModal');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // --- 2. CONTADOR DE TIEMPO (5 de Abril a las 03:00 AM) ---
+    function getStartDate() {
+      const now = new Date();
+      let year = now.getFullYear();
+      let startDate = new Date(year, 3, 5, 3, 0, 0); 
+      
+      if (startDate > now) {
+        startDate = new Date(year - 1, 3, 5, 3, 0, 0);
+      }
+      return startDate;
+    }
+
+    const startDate = getStartDate();
+
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - startDate;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('counter').innerHTML = 
+        `Hablando desde hace: <span>${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+    }
+    setInterval(updateCounter, 1000);
+    updateCounter();
+
+    // --- 3. DESBLOQUEO DEL APARTADO SECRETO ---
+    let tapCount = 0;
+    const secretTrigger = document.getElementById('secretTrigger');
+    const secretTabBtn = document.getElementById('secretTabBtn');
+
+    secretTrigger.addEventListener('click', () => {
+      tapCount++;
+      if (tapCount >= 3) {
+        secretTabBtn.style.display = 'block';
+        alert('🔥 Apartado Spicy Desbloqueado');
+        switchTab('secret');
+        tapCount = 0;
+      }
+    });
+
+    // --- 4. PESTAÑAS / NAVEGACIÓN ---
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      
+      if (tab === 'home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+      if (tab === 'his') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+      if (tab === 'hers') document.querySelectorAll('.nav-btn')[2].classList.add('active');
+      if (tab === 'upload') document.querySelectorAll('.nav-btn')[3].classList.add('active');
+      if (tab === 'secret') secretTabBtn.classList.add('active');
+    }
+
+    // --- 5. MANEJO DE CONTENIDO (LOCALSTORAGE) ---
+    function renderGallery() {
+      const moments = JSON.parse(localStorage.getItem('our_story_moments')) || [];
+      
+      const sliderHis = document.getElementById('slider-his');
+      const sliderHers = document.getElementById('slider-hers');
+      const sliderSecret = document.getElementById('slider-secret');
+
+      const hisItems = moments.filter(m => m.category === 'his');
+      const hersItems = moments.filter(m => m.category === 'hers');
+      const secretItems = moments.filter(m => m.category === 'secret');
+
+      sliderHis.innerHTML = hisItems.length ? hisItems.map(createCardHTML).join('') : '<div class="empty-msg">Aún no hay publicaciones aquí.</div>';
+      sliderHers.innerHTML = hersItems.length ? hersItems.map(createCardHTML).join('') : '<div class="empty-msg">Aún no hay publicaciones aquí.</div>';
+      sliderSecret.innerHTML = secretItems.length ? secretItems.map(createCardHTML).join('') : '<div class="empty-msg">Zona secreta vacía.</div>';
+    }
+
+    function createCardHTML(m) {
+      return `
+        <div class="card">
+          ${m.image ? `<img src="${m.image}" class="card-img" alt="${m.title}" />` : ''}
+          <div class="card-body">
+            <h3 class="card-title">${m.title}</h3>
+            ${m.poem ? `<div class="card-poem">${m.poem}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const category = document.getElementById('category').value;
+      const title = document.getElementById('title').value;
+      const poem = document.getElementById('poem').value;
+      const fileInput = document.getElementById('image');
+      const file = fileInput.files[0];
+
+      const saveAndRefresh = (imageDataUrl = null) => {
+        const newMoment = {
+          category,
+          title,
+          poem,
+          image: imageDataUrl,
+          id: Date.now()
+        };
+
+        const moments = JSON.parse(localStorage.getItem('our_story_moments')) || [];
+        moments.unshift(newMoment);
+        localStorage.setItem('our_story_moments', JSON.stringify(moments));
+
+        document.getElementById('uploadForm').reset();
+        renderGallery();
+
+        if (category === 'secret') {
+          secretTabBtn.style.display = 'block';
+        }
+        switchTab(category);
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          saveAndRefresh(event.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        saveAndRefresh(null);
+      }
+    });
+
+    renderGallery();
+  </script>
+</body>
+</html>
